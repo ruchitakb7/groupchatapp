@@ -8,6 +8,6 @@ router.get('/signup',controllerpage.signupage);
 
 router.post('/signupuser',controllerpage.signupdetails);
 
-router.get('/checkEmail',controllerpage.checkemail)
+
 
 module.exports=router;

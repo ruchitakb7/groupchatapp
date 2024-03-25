@@ -18,28 +18,25 @@ async function onSubmit(e) {
     phoneno:phonenoInput.value,
     password: passwordInput.value
   }; 
+  userDetails.name = userDetails.name[0].toUpperCase() + userDetails.name.slice(1);
 
   try {
-    
-    userDetails.name = userDetails.name[0].toUpperCase() + userDetails.name.slice(1);
-    const char=emailInput.value;
-    const response= await axios.get('/checkEmail')
-    
-     const val= await response.data.filter((review) =>
-                 review.email.includes(char)); 
-    
-    
-    if(val.length==0){
         const user= await axios.post('/signupuser',userDetails);
-        alert('signed up successfully')
+        if(user.status==200)
+        {
+            p.innerHTML=user.data.message;
+        }
+        if(user.sttaus==201)
+        {
+            console.log(user.data.message)
+            alert(user.data.message)
+            window.location.href="/login.html"
+        }
+       
         clearInputs();   
     }
-    else{
-        
-        p.innerHTML=`User Already Exist`;
-    }
  
-  } catch (err) {
+  catch (err) {
     console.log('Error creating user:', err);
     
   }

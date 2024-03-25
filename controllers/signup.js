@@ -10,37 +10,38 @@ exports.signupage= (req,res,next)=>{
 }
 
 exports.signupdetails= async (req,res,next) =>{
-    try{
+    
 
     const name= req.body.name;
     const email=req.body.email;
     const phoneno= req.body.phoneno;
     const password= req.body.password;
-  
+    try{
+
+         const user = await User.findOne({where:{email:email}})
+         if(user)
+         {
+           return res.status(200).json({message:"User alredy Exist"})
+         }
+         else
+         {
             const saltrounds=8;
             bcrypt.hash(password, saltrounds, async (err, hash) => {
             console.log(err)
 
             const signupdetail= await User.create({name:name,email:email,phoneno:phoneno,password:hash})
 
-             res.status(201).json({message:"User has been successfully logged in"});
+            return res.status(201).json({message:"User has been successfully logged in"});
           })
+
+         }
+  
+           
     }
     catch(e)
     {
-        res.status().json({error:e})
+        res.json({error:e})
     }
 }
 
 
-exports.checkemail= async(req,res,next) =>{
-    try{
-       
-        const checkinfo= await User.findAll();
-       
-        res.status(201).json(checkinfo)
-    }
-    catch(e){
-        res.status(400).json({error:e})
-    }
-}
