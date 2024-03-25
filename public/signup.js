@@ -22,13 +22,14 @@ async function onSubmit(e) {
 
   try {
         const user= await axios.post('/signupuser',userDetails);
-        if(user.status==200)
-        {
-            p.innerHTML=user.data.message;
-        }
-        if(user.sttaus==201)
+        if(user.status==208)
         {
             console.log(user.data.message)
+            p.innerHTML=user.data.message;
+        }
+        else
+        {
+            console.log(user)
             alert(user.data.message)
             window.location.href="/login.html"
         }

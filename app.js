@@ -11,6 +11,7 @@ dotenv.config()
 const seq = require('./util/database.js');
 const User= require('./models/signup.js');
 
+
 app.use(cors({
     origin:"*",
 }))
@@ -21,6 +22,8 @@ app.use(express.static(path.join(__dirname, "views")))
 
 const signuprouterFile= require('./routes/signup.js');   
 app.use(signuprouterFile);
+const loginrouterFile= require('./routes/login.js')
+app.use(loginrouterFile)
 
 
 

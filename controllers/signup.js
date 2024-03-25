@@ -21,7 +21,7 @@ exports.signupdetails= async (req,res,next) =>{
          const user = await User.findOne({where:{email:email}})
          if(user)
          {
-           return res.status(200).json({message:"User alredy Exist"})
+           return res.status(208).json({message:"User alredy Exist"})
          }
          else
          {
@@ -31,7 +31,7 @@ exports.signupdetails= async (req,res,next) =>{
 
             const signupdetail= await User.create({name:name,email:email,phoneno:phoneno,password:hash})
 
-            return res.status(201).json({message:"User has been successfully logged in"});
+            return res.json({message:"Profile has been created successfully"});
           })
 
          }
