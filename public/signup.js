@@ -31,7 +31,7 @@ async function onSubmit(e) {
     
     if(val.length==0){
         const user= await axios.post('/signupuser',userDetails);
-        console.log('signed up successfully')
+        alert('signed up successfully')
         clearInputs();   
     }
     else{
@@ -48,5 +48,6 @@ async function onSubmit(e) {
 function clearInputs() {
   nameInput.value = '';
   emailInput.value = '';
+  phonenoInput.value = '';
   passwordInput.value = '';
 }

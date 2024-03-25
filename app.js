@@ -2,6 +2,7 @@ const express= require('express');
 const app= express();
 
 const path=require('path');
+const cors= require('cors')
 const dotenv = require('dotenv');
 dotenv.config()
 
@@ -10,7 +11,9 @@ dotenv.config()
 const seq = require('./util/database.js');
 const User= require('./models/signup.js');
 
-
+app.use(cors({
+    origin:"*",
+}))
 app.use(express.json());
 app.use(express.static('public')) 
 app.use(express.static(path.join(__dirname, "views"))) 
