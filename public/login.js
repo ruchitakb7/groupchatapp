@@ -3,7 +3,7 @@ const emailInput = document.querySelector('#email');
 const passwordInput = document.querySelector('#password');
 const errordiv= document.querySelector('#errordiv')
 const p=document.querySelector('#p')
-const passwordbtn= document.querySelector('#pswbtn');
+//const passwordbtn= document.querySelector('#pswbtn');
 
 loginForm.addEventListener('submit',submitform)
 
@@ -21,12 +21,13 @@ async function submitform(e)
         if(response.data.success==true)
         {
             alert(response.data.message)
+            clearInputs()
             localStorage.setItem('token',response.data.token);
-            window.location.href='/mainpage'
+            window.location.href='/chat.html'
         
         }
         else{
-            clearInputs()
+            
             p.innerHTML=`${response.data.message}`;
            
             console.log(response.data.message)
@@ -47,6 +48,6 @@ function clearInputs() {
     passwordInput.value = '';
   }
 
-  passwordbtn.addEventListener('click',()=>{
+ /* passwordbtn.addEventListener('click',()=>{
     window.location.href='/forgotpassword';
-  })
+  })*/
