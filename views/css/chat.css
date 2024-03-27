@@ -2,29 +2,21 @@ body{
     
    background-color: rgb(152, 201, 152);
 }
-.container{
-    box-shadow: 10px 5px 5px 10px  rgb(7, 153, 102);
-    margin-top: 0px;
-    height: auto;
-}
-
 
 .header {
     overflow: hidden;
     font-weight: bold;
     color: rgb(6, 140, 6);
     padding: 10px 10px;
-    font-size: medium;
-    
+    font-size: medium;   
   }
 
   .container{
     width: 400px;
- 
-    box-shadow: 5px 5px 5px 10px rgb(153, 199, 153);
+    
+    box-shadow: 5px 10px 5px white;
     height: auto;
     padding: 10px;
-
   }
 
   footer {
@@ -34,5 +26,9 @@ body{
     color:rgb(150, 186, 150);
     margin-top: 415px;
   }
-
+ 
+  p{
+    width:300px;
+    font-weight: bold;
+  }
   

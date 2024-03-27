@@ -7,4 +7,6 @@ const auth= require('../middleware/auth')
 
 router.post('/addmessage',auth.authenticate,messagecontroller.addMessage)
 
+router.get('/allmessage',messagecontroller.getmessage)
+
 module.exports=router

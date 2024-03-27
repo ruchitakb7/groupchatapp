@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken')
 
 exports.addMessage= async(req,res,next)=>{
     const text= req.body.msg;
+    console.log(text)
     try{
         await Message.create({
             msg:text,
@@ -20,6 +21,22 @@ exports.addMessage= async(req,res,next)=>{
     {
         res.json(e)
     }
+}
+
+exports.getmessage= async(req,res,next)=>{
+    try{
+        const message= await Message.findAll({
+            attributes: ['name','msg','userId']
+        })
+        console.log(message)
+        res.json({msg:message})
+
+    }
+    catch(e)
+    {
+        res.json(e)
+    }
+
 }
 
 
