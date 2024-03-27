@@ -1,10 +1,11 @@
 body{
-    background-image: url('https://d1csarkz8obe9u.cloudfront.net/posterpreviews/powerpoint-whatsapp-chat-app-background-design-template-2cb44957f5cfcf79f6918ab4b60b04c9_screen.jpg?ts=1698696084');
-    background-size:cover;
+    
+   background-color: rgb(152, 201, 152);
 }
 .container{
     box-shadow: 10px 5px 5px 10px  rgb(7, 153, 102);
     margin-top: 0px;
+    height: auto;
 }
 
 
@@ -12,7 +13,8 @@ body{
     overflow: hidden;
     font-weight: bold;
     color: rgb(6, 140, 6);
-    padding: 20px 10px;
+    padding: 10px 10px;
+    font-size: medium;
     
   }
 
@@ -27,8 +29,10 @@ body{
 
   footer {
     text-align: center;
-    padding: 5px;
-    background-color: rgb(98, 188, 98);
+    padding: 10px;
+   
     color:rgb(150, 186, 150);
-    margin-top: 390px;
+    margin-top: 415px;
   }
+
+  

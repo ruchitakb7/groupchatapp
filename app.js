@@ -10,6 +10,7 @@ dotenv.config()
 
 const seq = require('./util/database.js');
 const User= require('./models/signup.js');
+const Message=require('./models/message.js');
 
 
 app.use(cors({
@@ -24,9 +25,12 @@ const signuprouterFile= require('./routes/signup.js');
 app.use(signuprouterFile);
 const loginrouterFile= require('./routes/login.js')
 app.use(loginrouterFile)
+const messageRouterfile=require('./routes/message.js')
+app.use(messageRouterfile)
 
 
-
+User.hasMany(Message)
+Message.belongsTo(User)
 
 seq.sync()
 .then(res=>
