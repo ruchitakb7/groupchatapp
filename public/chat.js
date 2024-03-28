@@ -30,7 +30,8 @@ async function sendMessage()
         const res= await axios.post('/addmessage',{msg}, {headers: { "Authorization": token }})
         console.log(res.data.msg);
         message.value=""
-       messagedata()
+      // messagedata()
+     // messagedisplay(res.data.msg,token)
     }
     catch(e)
     {
