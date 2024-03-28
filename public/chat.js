@@ -1,15 +1,16 @@
 const chatbox= document.querySelector('#chatbox')
-//const chatform= document.querySelector("#chatform")
+const chatform= document.querySelector("#chatform")
 const message= document.querySelector('#message')
 const sendbtn= document.querySelector('#sendbtn')
-
 sendbtn.addEventListener('click', sendMessage)
 
-window.addEventListener('DOMContentLoaded', refresh)
- function refresh()
- {
+window.addEventListener('DOMContentLoaded',refresh)
+
+function refresh()
+{
     messagedata()
- }
+
+}
 function parseJwt(token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -29,7 +30,6 @@ async function sendMessage()
         const res= await axios.post('/addmessage',{msg}, {headers: { "Authorization": token }})
         console.log(res.data.msg);
         message.value=""
-       // window.location.href='/chat.html'
        messagedata()
     }
     catch(e)
@@ -37,7 +37,7 @@ async function sendMessage()
         alert('mesage could not send try again letter')
         console.log(e)
     }   
-}
+} 
 
 async function messagedata()
 {
@@ -65,13 +65,15 @@ async function messagedata()
     console.log(response)
     const parsetoken= parseJwt(token)
     console.log(parsetoken)
+
      response.forEach(res => {
         console.log(res)
+
         if(res.userId==parsetoken.id)
         {
             const para= document.createElement('p')
             para.innerHTML=`you : ${res.msg}`
-            chatbox.appendChild(para)
+           chatbox.appendChild(para)
             para.style.color="red"
         }
         else{
@@ -81,6 +83,7 @@ async function messagedata()
             para.style.color="purple"
 
         }
+        
      })
 
 
