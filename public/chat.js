@@ -1,4 +1,4 @@
-const chatbox= document.querySelector('#chatbox')
+const chatbox= document.querySelector('.container')
 const chatform= document.querySelector("#chatform")
 const message= document.querySelector('#message')
 const sendbtn= document.querySelector('#sendbtn')
@@ -38,6 +38,7 @@ async function sendMessage()
         console.log(e)
     }   
 } 
+setInterval(messagedata, 1000)
 
 async function messagedata()
 {
@@ -46,7 +47,7 @@ async function messagedata()
     {
         try{
             const response= await axios.get('/allmessage')
-            console.log(response.data.msg)
+           // console.log(response.data.msg)
             messagedisplay(response.data.msg,token)
 
         }
@@ -56,24 +57,22 @@ async function messagedata()
         }
     }
     else{
-        alert('you must be looged in first')
+        alert('you must be logged in first')
     }
 }
 
  function messagedisplay(response,token)
 {
-    console.log(response)
+    chatbox.innerHTML=``;
     const parsetoken= parseJwt(token)
-    console.log(parsetoken)
 
      response.forEach(res => {
-        console.log(res)
 
         if(res.userId==parsetoken.id)
         {
             const para= document.createElement('p')
             para.innerHTML=`you : ${res.msg}`
-           chatbox.appendChild(para)
+            chatbox.appendChild(para)
             para.style.color="red"
         }
         else{
@@ -85,6 +84,7 @@ async function messagedata()
         }
         
      })
+     
 
 
 }
