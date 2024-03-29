@@ -9,21 +9,42 @@
     <link rel="stylesheet" href="/css/chat.css">
 </head>
 <body >
-    <div class="header">
-        <center><h3>Chat</h3> </center>
+    <header></header>
+    <div id="groups" style="overflow:scroll; height: 100%;">
+        <center><h3>Groups</h3> </center>
+        <br>
+        <button onclick="creategrp()" style="font-size:small;">Create Group</button> 
+        <br>
+        <div id="grpform" style="display: none;">
+        <input type="text"  id="grpname" placeholder="enter group name">
+        <button onclick="grpcreated()">Create</button>
+        </div>
+         <br>
+        <div id="grplist" style="margin-top: 20px; width: fit-content;">
+
+        </div>
+        
+
     </div>
-  
-    <div class="container">
+    
+    <div id="chat">
+            <center><h3>Chat</h3> </center>
+    
+
+        <div class="container">
    
 
-    </div>
+        </div>
 
-      <footer>
+    </div>
+   
+
+      <div class="footer" style="display: none;">
            
             <input type="text" id="message" placeholder="type your message" required style="width: 300px;" >
             <button id="sendbtn">send</button>
         
-    </footer> 
+        </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/chat.js"></script>
 </body>

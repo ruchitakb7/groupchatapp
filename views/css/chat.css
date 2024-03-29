@@ -4,7 +4,7 @@ body{
   background-repeat: no-repeat;
 }
 
-.header {
+header {
     overflow: hidden;
     font-weight: bold;
     color: rgb(6, 140, 6);
@@ -16,20 +16,43 @@ body{
     width: 400px;
     overflow: auto;
     max-height: 300px;
-    padding: 20px;
   }
 
-  footer {
-    text-align: center;
-    padding: 10px;
-    margin-top: 70px;
-    background-color: rgb(222, 38, 38);
-    color:rgb(150, 186, 150);
   
-  }
+  .footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    padding: 10px;
+    width: 100%;
+    background-color: red;
+    color: white;
+    text-align: center;
+ }
  
   p{
     width:300px;
     font-weight: bold;
   }
+
+  #chat{
+    width: 70%;
+    float: left;
+    padding: 20px;
+  
+  }
+
+  #groups{
+    width: 30%;
+   
+    float: left;
+    padding: 20px;
+    height: 100%;
+    
+  }
+  .float-child {
+    width: 50%;
+    float: left;
+    border: 2px solid red;
+} 
   
