@@ -12,4 +12,10 @@ router.get('/getallgroup/:id',group.getallgrp)
 
 router.post('/addmember',group.addMember)
 
+router.delete('/deletegrp/:id',group.deleteGrp)
+
+router.post('/group/removemember/',group.removeMember)
+
+router.post('/group/changeadmin',group.changeAdmin)
+
 module.exports=router

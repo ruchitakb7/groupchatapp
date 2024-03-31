@@ -28,10 +28,9 @@
     </div>
     
     <div id="chat">
-            <center><h3>Chat</h3> </center>
-    
-
-        <div class="container">
+           
+        <div class="container" style="display: none;">
+            <div id="title"></div>  
    
 
         </div>
@@ -39,11 +38,17 @@
     </div>
    
 
-      <div class="footer" style="display: none;">
+      <div class="footer">
+
+        <button onclick="logout()" style="float: left;">Log out</button>
            
+        <div id="msginput" style="float: left; margin-left: 40%;">
             <input type="text" id="message" placeholder="type your message" required style="width: 300px;" >
             <button id="sendbtn">send</button>
+
+        </div>
         
+       
         </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/chat.js"></script>

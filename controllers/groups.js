@@ -17,12 +17,15 @@ exports.creategrp=async(req,res,next)=>{
         res.json({e})
     }
 }
+ 
 
 exports.getallgrp=async(req,res,next) =>{
     const userid= req.params.id
     try{
         const group = await Usergrp.findAll({where:{userId:userid}})
-        res.json({group})
+        const admin= await Group.findAll({where:{createdby:userid}})
+
+        res.json({usergroup:group,admin:admin})
     }
     catch(e)
     {
@@ -36,12 +39,11 @@ exports.addMember=async(req,res,next)=>{
     const {email,grpname,grpid}=req.body
     try{
         const user= await User.findOne({where:{email:email}})
-        console.log(user)
-        if(user!=null)
+        if(user)
         {
             const response= await Usergrp.create({grpname:grpname,groupId:grpid,userId:user.id})
-            console.log(response)
-           return res.json({response})
+        
+           res.json({response})
         }
         else{
             throw new Error('user not exist')
@@ -51,6 +53,75 @@ exports.addMember=async(req,res,next)=>{
     }catch(e)
     {
         console.log(e)
-       return res.status(404).json({e})
+        res.status(404).json({e})
+    }
+}
+
+exports.deleteGrp= async(req,res,next)=>{
+    const groupId=req.params.id
+    try{
+        const x= Group.destroy({where:{id:groupId}})
+        const y= Usergrp.destroy({where:{groupId:groupId}})
+        const z= Message.destroy({where:{groupId:groupId}})
+
+        await Promise.all([x,y,z])        
+        res.json({success:true})               
+    }
+    catch(e)
+    {
+        console.log(e)
+        res.json('something went wrong')
+    }
+}
+
+exports.removeMember= async(req,res,next)=>{
+   const email=req.body.email;
+   
+   const groupId = req.body.groupId
+    try{
+
+        const user= await User.findOne({where:{email:email}})
+        
+        if(user)
+        {
+            const response= await Usergrp.destroy({where:{userId:user.id,groupId:groupId}})
+            res.json({success:true})
+        }
+        else{
+            throw new error('User not found')
+        }
+
+    }
+    catch(e)
+    {
+        console.log(e)
+        res.json(e)
+    }
+}
+
+exports.changeAdmin=async(req,res,next)=>{
+    const email= req.body.email
+    const groupId= req.body.groupId
+
+    try{
+
+        const user = await User.findOne({where:{email:email}})
+        if(!user)
+        return res.json({msg:"No user Registered with that email"});
+        
+            const member= await Usergrp.findOne({where:{userId:user.id,groupId:groupId}})
+            if(!member)
+            return res.json({msg:"No user Member of this group with entered email id"});
+            
+                const admin= await Group.update({createdby:user.id},{where:{id:groupId}})
+                return res.json({msg:"Admin changed"})
+            
+           
+    }
+    catch(e)
+    {
+        console.log(e)
+        res.json({e})
+
     }
 }

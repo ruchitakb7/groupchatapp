@@ -1,15 +1,12 @@
-body{
-  background-image: url('https://d1csarkz8obe9u.cloudfront.net/posterpreviews/powerpoint-whatsapp-chat-app-background-design-template-2cb44957f5cfcf79f6918ab4b60b04c9_screen.jpg?ts=1698696084');
-  background-size: cover;
-  background-repeat: no-repeat;
-}
+
 
 header {
     overflow: hidden;
     font-weight: bold;
-    color: rgb(6, 140, 6);
+    background-color: rgb(73, 221, 75);
     padding: 10px 10px;
     font-size: medium;   
+    height: 40px;
   }
 
   .container{
@@ -18,6 +15,11 @@ header {
     max-height: 300px;
   }
 
+  #title{
+    width: 400px;
+    height:20px;
+    background-color: pink;
+  }
   
   .footer {
     position: fixed;
@@ -25,7 +27,7 @@ header {
     bottom: 0;
     padding: 10px;
     width: 100%;
-    background-color: red;
+    background-color: rgb(101, 153, 218);
     color: white;
     text-align: center;
  }
@@ -33,6 +35,7 @@ header {
   p{
     width:300px;
     font-weight: bold;
+    font-size: small;
   }
 
   #chat{
@@ -50,9 +53,5 @@ header {
     height: 100%;
     
   }
-  .float-child {
-    width: 50%;
-    float: left;
-    border: 2px solid red;
-} 
+  
   

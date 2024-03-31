@@ -10,7 +10,7 @@ window.addEventListener('DOMContentLoaded',refresh)
 
 function refresh()
 {
-    checkgroup()
+    getallGroup()
 
 }
 function parseJwt(token) {
@@ -34,9 +34,8 @@ async function sendMessage()
     try{
         const res= await axios.post('/addmessage',msgdata, {headers: { "Authorization": token }})
          console.log(res.data);
-        message.value=""
-       messagedata()
-     // messagedisplay(res.data.msg,token)
+         message.value=""
+     
     }
     catch(e)
     {
@@ -70,6 +69,8 @@ async function messagedata()
 
  function messagedisplay(response,token)
 {
+    chatbox.style.display='block'
+    const groupname= localStorage.getItem('groupname')
     chatbox.innerHTML=``;
     const parsetoken= parseJwt(token)
 
@@ -96,6 +97,7 @@ function creategrp()
 {
     document.getElementById('grpform').style.display='block'
     
+    
 }
 
 async function grpcreated(){
@@ -107,6 +109,7 @@ async function grpcreated(){
             try{
                 const response= await axios.post('/creategrp',{grpname},{headers: { "Authorization": token }})
               //  console.log(response)
+              window.location.href='/chat.html'
             }
             catch(e)
             {
@@ -115,18 +118,18 @@ async function grpcreated(){
             }
     }
     else{
-        alert('create account')
+        alert('create account first')
     }
 
 }
-async function checkgroup()
+async function getallGroup()
 {
     const token=localStorage.getItem('token')
     const parsetoken=parseJwt(token)
     try{
         const grpinfo= await axios.get(`/getallgroup/${parsetoken.id}`)
-      //  console.log(grpinfo)
-        grpdispaly(grpinfo.data.group)
+       console.log(grpinfo.data.admin)
+        grpdispaly(grpinfo.data.usergroup,grpinfo.data.admin,parsetoken.id)
     }
     catch(e)
     {
@@ -135,37 +138,72 @@ async function checkgroup()
      
 }
 
-function grpdispaly(groups)
+ function grpdispaly(groups,admin,userid)
 {
+    
     groups.forEach(res =>{
-       console.log(res)
+    
         const para= document.createElement('p')
+        
         para.innerHTML=`${res.grpname}`;
         const chatbtn= document.createElement('button')
         chatbtn.textContent='see chat'
-        const adduser= document.createElement('button')
-        adduser.textContent='Add User'
-        para.appendChild(adduser)
+        
         para.appendChild(chatbtn)
-
         grouplist.appendChild(para)
-        adduser.addEventListener('click',()=>{
-            const email=prompt('enter email id')
-            console.log(email)
-            addMember(email,res)
-        })
-
         chatbtn.addEventListener('click',()=>{
             document.querySelector('.footer').style.display='block'
             localStorage.setItem('groupId',res.groupId)
+            localStorage.setItem('groupname',res.grpname)
            
-         // messagedata()
+          messagedata()
+          setInterval(messagedata, 1000)
+         
         })
+         let x;
+           admin.forEach(a=>{
+             if(a.id==res.groupId)
+             x=a.id
+           })
+           
+        if(x)
+        {
+            const adduser= document.createElement('button')
+            adduser.textContent='Add User'
+            const deletegrp=document.createElement('button')
+            deletegrp.textContent='Delete Group';
+            const remove=document.createElement('button')
+            remove.textContent='Remove Member';
+            const admin=document.createElement('button')
+            admin.textContent='Admin';
+            
+            para.appendChild(adduser)
+            para.appendChild(deletegrp)
+            para.appendChild(remove)
+            para.appendChild(admin)
+
+            adduser.addEventListener('click',()=>{
+                const email=prompt('enter email id')
+                addMember(email,res)
+            })
+
+            deletegrp.addEventListener('click',()=>{deleteGroup(res)})
+
+            remove.addEventListener('click',()=>{
+                const email=prompt('Enetr email id of Member')
+                removeMember(email,res)})
+
+            admin.addEventListener('click',()=>{
+                const email=prompt('Enetr email id of Member')
+                changeAdmin(email,res.groupId)
+            })    
+    
+        } 
 
     })
 
 }
-setInterval(messagedata, 1000)
+
 
 async function addMember(email,grp)
 {
@@ -177,14 +215,73 @@ async function addMember(email,grp)
     try{
         const group= await axios.post('/addmember',info)
         console.log(group)
+        window.location.href='/chat.html'
+        
     }
     catch(e)
     {
         alert(e)
-        console.log(e)
+    
     }
 }
 
+async function deleteGroup(res)
+{
+    try{
+
+        const response= await axios.delete(`/deletegrp/${res.groupId}`)
+        console.log(response)
+        
+       window.location.href='/chat.html'
+
+    }
+    catch(e)
+    {
+        alert(e)
+    }
+    
+
+}
+
+async function removeMember(email,res)
+{
+
+    const data={
+        email:email,
+        groupId:res.groupId
+    }
+    try{
+
+        const user= await axios.post('/group/removemember',data)
+        console.log(user.data.success)
+        window.location.href='/chat.html'
+
+    }
+    catch(e)
+    {
+        alert(e)
+    }
+}
+
+async function changeAdmin(email,groupId)
+{
+    const data={
+        email:email,
+        groupId:groupId
+    }
+    try{
+         
+        const res= await axios.post('/group/changeadmin',data)
+        alert(res.data.msg)
+        window.location.href='/chat.html'
+    }
+    catch(e)
+    {
+       alert(e)
+    }
+   
+
+}
 
 
 
