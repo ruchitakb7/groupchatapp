@@ -125,3 +125,17 @@ exports.changeAdmin=async(req,res,next)=>{
 
     }
 }
+
+
+exports.getallMembers= async(req,res,next)=>{
+    const grpid= req.params.id
+    try{
+        const member= await Usergrp.findAll({where:{groupId:grpid}})
+        res.json(member)
+    }
+    catch(e)
+    {
+        console.log(e)
+        res.json(e)
+    }
+}

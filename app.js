@@ -1,11 +1,28 @@
 const express= require('express');
 const app= express();
+const http =require ("http");
+const socketIO= require('socket.io')
+
+const server = http.createServer(app);
+const io= socketIO(server,{ cors : { origin : '*'}});
+
+io.on("connection",(socket)=>{
+    console.log('websocket connected--------------');
+    socket.on("message",(msgdata)=>{
+        console.log('hello')
+        socket.broadcast.emit("message",msgdata)
+        {
+            console.log(msgdata)
+        }
+    });
+    
+})
+
 
 const path=require('path');
 const cors= require('cors')
 const dotenv = require('dotenv');
 dotenv.config()
-
 
 
 const seq = require('./util/database.js');
@@ -44,7 +61,7 @@ Message.belongsTo(Group)
 seq.sync()
 .then(res=>
    { 
-    app.listen(process.env.port);  
+    server.listen(process.env.port);  
 })                               
 .catch((e)=>{
    console.log(e)

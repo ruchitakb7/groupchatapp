@@ -18,4 +18,6 @@ router.post('/group/removemember/',group.removeMember)
 
 router.post('/group/changeadmin',group.changeAdmin)
 
+router.get('/group/members/:id',group.getallMembers)
+
 module.exports=router

@@ -3,7 +3,11 @@ const chatform= document.querySelector("#chatform")
 const message= document.querySelector('#message')
 const sendbtn= document.querySelector('#sendbtn')
 const grouplist= document.querySelector('#grplist')
+const groupchat = document.querySelector('#grouptitle')
+const groupdetails= document.querySelector('#groupdetails')
 sendbtn.addEventListener('click', sendMessage)
+
+const socket = io.connect("http://localhost:3001");
 
 
 window.addEventListener('DOMContentLoaded',refresh)
@@ -23,9 +27,16 @@ function parseJwt(token) {
     return JSON.parse(jsonPayload);
   }
   
+  socket.on("message", (msgdata) => {
 
-async function sendMessage()
+    console.log('comesSocketes');
+    messagedata()
+  });
+  
+
+async function sendMessage(e)
 {
+    
     const msgdata={
         msg:message.value,
         groupId:localStorage.getItem('groupId')
@@ -33,17 +44,18 @@ async function sendMessage()
     const token= localStorage.getItem('token')
     try{
         const res= await axios.post('/addmessage',msgdata, {headers: { "Authorization": token }})
-         console.log(res.data);
          message.value=""
+         messagedata()
+         socket.emit("message",msgdata);
      
     }
     catch(e)
     {
-        alert('mesage could not send try again letter')
+        alert('message could not send try again letter')
         console.log(e)
     }   
 } 
-//setInterval(messagedata, 1000)
+
 
 async function messagedata()
 {
@@ -69,13 +81,17 @@ async function messagedata()
 
  function messagedisplay(response,token)
 {
-    chatbox.style.display='block'
-    const groupname= localStorage.getItem('groupname')
+    groupchat.style.display="block"
+
+    groupdetails.style.display="block"
+    
+    groupchat.innerHTML=`<h3>${localStorage.getItem('groupname')}</h3>`
+   
     chatbox.innerHTML=``;
     const parsetoken= parseJwt(token)
 
      response.forEach(res => {
-
+       
         if(res.userId==parsetoken.id)
         {
             const para= document.createElement('p')
@@ -98,6 +114,20 @@ function creategrp()
     document.getElementById('grpform').style.display='block'
     
     
+}
+async function getallMember()
+{
+   const id= localStorage.getItem('groupId')
+    try{
+
+        const memebrs= await axios.get(`/group/members/${id}`)
+        console.log(memebrs)
+
+    }
+    catch(e)
+    {
+        console.log(e)
+    }
 }
 
 async function grpcreated(){
@@ -151,13 +181,14 @@ async function getallGroup()
         
         para.appendChild(chatbtn)
         grouplist.appendChild(para)
+
         chatbtn.addEventListener('click',()=>{
             document.querySelector('.footer').style.display='block'
             localStorage.setItem('groupId',res.groupId)
             localStorage.setItem('groupname',res.grpname)
            
           messagedata()
-          setInterval(messagedata, 1000)
+          
          
         })
          let x;

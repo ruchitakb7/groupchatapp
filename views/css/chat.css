@@ -15,10 +15,13 @@ header {
     max-height: 300px;
   }
 
-  #title{
+  #grouptitle{
     width: 400px;
-    height:20px;
+    height:50px;
     background-color: pink;
+    margin-left: 27%;
+    text-align: center;
+    
   }
   
   .footer {
@@ -52,6 +55,17 @@ header {
     padding: 20px;
     height: 100%;
     
+  }
+
+  #groupdetails{
+    
+   float:left;
+   display: none;
+  }
+
+  button{
+    border: none;
+    font-size: 15px;
   }
   
   
