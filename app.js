@@ -7,15 +7,11 @@ const server = http.createServer(app);
 const io= socketIO(server,{ cors : { origin : '*'}});
 
 io.on("connection",(socket)=>{
-    console.log('websocket connected--------------');
-    socket.on("message",(msgdata)=>{
-        console.log('hello')
-        socket.broadcast.emit("message",msgdata)
-        {
-            console.log(msgdata)
-        }
-    });
-    
+    console.log('websocket connected');
+    socket.on("message",()=>{socket.broadcast.emit("message") });
+    socket.on("update",(userId)=>{ socket.broadcast.emit("update",userId)});
+    socket.on("deletegrp",()=>{ socket.broadcast.emit("deletegrp",)});
+  
 })
 
 
@@ -31,9 +27,7 @@ const Message=require('./models/message.js');
 const Usergrp= require('./models/usergrp.js')
 const Group= require('./models/groups.js')
 
-app.use(cors({
-    origin:"*",
-}))
+app.use(cors({origin:"*",}))
 app.use(express.json());
 app.use(express.static('public')) 
 app.use(express.static(path.join(__dirname, "views"))) 

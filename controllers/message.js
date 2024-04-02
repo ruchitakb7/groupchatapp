@@ -9,16 +9,18 @@ const jwt = require('jsonwebtoken')
 
 exports.addMessage= async(req,res,next)=>{
 
-    const text= req.body.msg;
+    const mess= req.body.msg;
     const groupId=req.body.groupId
     console.log(groupId)
 
     try{
       const message=  await Message.create({
-            msg:text,
+            msg:mess,
             name:req.user.name,
             userId:req.user.id,
-            groupId:groupId
+            groupId:groupId,
+            type:'text'
+    
         })
         console.log(message)
         res.json({success:true,msg:text})

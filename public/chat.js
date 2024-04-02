@@ -23,31 +23,63 @@ function parseJwt(token) {
     var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
-  
     return JSON.parse(jsonPayload);
   }
+
+
   
   socket.on("message", (msgdata) => {
+    messagedata() });
+  
+  socket.on('update',(userId)=>{  
+    const token= parseJwt(localStorage.getItem('token'))
+    if(userId==token.id)
+    {
+        getallGroup()
+    }  
+  }) 
 
-    console.log('comesSocketes');
-    messagedata()
-  });
+  socket.on("deletegrp", () => {getallGroup() });
+
   
 
 async function sendMessage(e)
 {
-    
-    const msgdata={
-        msg:message.value,
-        groupId:localStorage.getItem('groupId')
-    }
+    e.preventDefault();
     const token= localStorage.getItem('token')
+
     try{
-        const res= await axios.post('/addmessage',msgdata, {headers: { "Authorization": token }})
-         message.value=""
-         messagedata()
-         socket.emit("message",msgdata);
-     
+        if (document.getElementById('file').files[0]) {
+
+         //   const token = localStorage.getItem('token');
+            const groupId = localStorage.getItem('groupId');
+            let file = document.getElementById('file').files[0];
+            let formData = new FormData();
+            formData.append("file", file)
+            console.log("------->", formData);
+      
+           const headers = {
+              "Authorization": token,
+             'Content-Type': 'multipart/form-data'     
+           }
+      
+            const res = await axios.post(`/upload/${groupId}`, formData, {headers})
+            console.log(res.data.userFile);
+      
+           // socket.emit("file", res.data.userFile.message, res.data.userFile.name, groupId, res.data.userFile.userId)
+           messagedata()
+           socket.emit("message",res); 
+        }
+    else{
+           const msgdata={
+                 msg:message.value,
+                 groupId:localStorage.getItem('groupId')
+                }
+              const res= await axios.post('/addmessage',msgdata, {headers: { "Authorization": token }})
+              message.value=""
+              messagedata()
+              socket.emit("message",msgdata);
+        }
     }
     catch(e)
     {
@@ -95,13 +127,27 @@ async function messagedata()
         if(res.userId==parsetoken.id)
         {
             const para= document.createElement('p')
-            para.innerHTML=`you : ${res.msg}`
+            if(res.type=='text')
+            {
+                para.innerHTML=`you : ${res.msg}`
+            }
+            else{
+                para.innerHTML=`you:<a href="${res.msg}"> click to see download</a>`
+            }
+            
             chatbox.appendChild(para)
             para.style.color="red"
         }
         else{
             const para= document.createElement('p')
+            if(res.type=="text")
             para.innerHTML=`${res.name} : ${res.msg}`
+           else
+           {
+            console.log(res.msg)
+            para.innerHTML=`${res.name} :<a href="${res.msg}"> click to see download</a>`
+           }
+          
             chatbox.appendChild(para)
             para.style.color="purple"
 
@@ -137,9 +183,10 @@ async function grpcreated(){
     {
             const grpname= document.getElementById('grpname').value
             try{
-                const response= await axios.post('/creategrp',{grpname},{headers: { "Authorization": token }})
+                const response= await axios.post('/creategrp',{grpname},{headers: { "Authorization": token }});
               //  console.log(response)
-              window.location.href='/chat.html'
+             getallGroup()
+          
             }
             catch(e)
             {
@@ -158,7 +205,7 @@ async function getallGroup()
     const parsetoken=parseJwt(token)
     try{
         const grpinfo= await axios.get(`/getallgroup/${parsetoken.id}`)
-       console.log(grpinfo.data.admin)
+        console.log(grpinfo.data.admin)
         grpdispaly(grpinfo.data.usergroup,grpinfo.data.admin,parsetoken.id)
     }
     catch(e)
@@ -170,7 +217,7 @@ async function getallGroup()
 
  function grpdispaly(groups,admin,userid)
 {
-    
+    grouplist.innerHTML=""
     groups.forEach(res =>{
     
         const para= document.createElement('p')
@@ -245,8 +292,7 @@ async function addMember(email,grp)
     }
     try{
         const group= await axios.post('/addmember',info)
-        console.log(group)
-        window.location.href='/chat.html'
+        socket.emit('update',group.data.response.userId)
         
     }
     catch(e)
@@ -261,16 +307,14 @@ async function deleteGroup(res)
     try{
 
         const response= await axios.delete(`/deletegrp/${res.groupId}`)
-        console.log(response)
-        
-       window.location.href='/chat.html'
+        getallGroup()
+       socket.emit('deletegrp')
 
     }
     catch(e)
     {
         alert(e)
-    }
-    
+    }    
 
 }
 
@@ -283,9 +327,10 @@ async function removeMember(email,res)
     }
     try{
 
-        const user= await axios.post('/group/removemember',data)
-        console.log(user.data.success)
-        window.location.href='/chat.html'
+        const response= await axios.post('/group/removemember',data)
+     
+      //  window.location.href='/chat.html'
+        socket.emit('update',response.data.user.id)
 
     }
     catch(e)
@@ -304,7 +349,7 @@ async function changeAdmin(email,groupId)
          
         const res= await axios.post('/group/changeadmin',data)
         alert(res.data.msg)
-        window.location.href='/chat.html'
+       // window.location.href='/chat.html'
     }
     catch(e)
     {

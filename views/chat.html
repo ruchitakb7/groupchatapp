@@ -10,7 +10,7 @@
 </head>
 <body >
     <header></header>
-    <div id="groups" style="overflow:scroll; height: 100%;">
+    <div id="groups" >
         <center><h3>Groups</h3> </center>
         <br>
         <button onclick="creategrp()" style="font-size:small;">Create Group</button> 
@@ -48,10 +48,12 @@
 
         <button onclick="logout()" style="float: left;">Log out</button>
            
-        <div id="msginput" style="float: left; margin-left: 40%;">
-            <input type="text" id="message" placeholder="type your message" required style="width: 300px;" >
+        <div id="msginput" style="float: left; margin-left: 30%;">
+          <form enctype="multipart/form-data">
+            <input type="text" id="message" placeholder="type your message" style="width: 300px;"    >
+            <input type="file" id="file" placeholder="choose file" style="width: 200px;" >
             <button id="sendbtn">send</button>
-
+          </form>
         </div>
         
        

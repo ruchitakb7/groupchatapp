@@ -42,7 +42,7 @@ exports.addMember=async(req,res,next)=>{
         if(user)
         {
             const response= await Usergrp.create({grpname:grpname,groupId:grpid,userId:user.id})
-        
+         // console.log(response)
            res.json({response})
         }
         else{
@@ -60,9 +60,9 @@ exports.addMember=async(req,res,next)=>{
 exports.deleteGrp= async(req,res,next)=>{
     const groupId=req.params.id
     try{
-        const x= Group.destroy({where:{id:groupId}})
-        const y= Usergrp.destroy({where:{groupId:groupId}})
-        const z= Message.destroy({where:{groupId:groupId}})
+        const x=  Group.destroy({where:{id:groupId}})
+        const y=  Usergrp.destroy({where:{groupId:groupId}})
+        const z=  Message.destroy({where:{groupId:groupId}})
 
         await Promise.all([x,y,z])        
         res.json({success:true})               
@@ -85,7 +85,7 @@ exports.removeMember= async(req,res,next)=>{
         if(user)
         {
             const response= await Usergrp.destroy({where:{userId:user.id,groupId:groupId}})
-            res.json({success:true})
+            res.json({success:true,user:user})
         }
         else{
             throw new error('User not found')
