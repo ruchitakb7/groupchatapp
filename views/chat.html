@@ -16,7 +16,7 @@
         <button onclick="creategrp()" style="font-size:small;">Create Group</button> 
         <br>
         <div id="grpform" style="display: none;">
-        <input type="text"  id="grpname" placeholder="enter group name">
+        <input type="text"  id="grpname" placeholder="Enter group name">
         <button onclick="grpcreated()">Create</button>
         </div>
          <br>
@@ -27,12 +27,13 @@
 
     </div>
     
-    <div id="chat">
+    <div id="chat" style="display: none;">
 
     <div id ="groupdetails">
       <button onclick="getallMember()">Group Details</button>
+      <p id="memberlist"></p>
     </div>
-      <div id="grouptitle" style="display: none;"> </div>
+      <div id="grouptitle" > </div>
 
         <div class="container" >
         
@@ -46,9 +47,10 @@
 
       <div class="footer">
 
-        <button onclick="logout()" style="float: left;">Log out</button>
+        <button onclick="logoutpage()" id="logoutbtn" style="float: left; display:none">Log out </button>
+        <button onclick="loginpage()" id="loginbtn" style="float: left;">Log In</button>
            
-        <div id="msginput" style="float: left; margin-left: 30%;">
+        <div id="msginput" style="float: left; margin-left: 30%; display: none;">
           <form enctype="multipart/form-data">
             <input type="text" id="message" placeholder="type your message" style="width: 300px;"    >
             <input type="file" id="file" placeholder="choose file" style="width: 200px;" >

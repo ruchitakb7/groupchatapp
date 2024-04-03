@@ -9,6 +9,11 @@ const Usergrp= sequelize.define('usergrp',{
         primaryKey:true,
         autoIncrement:true
     },
+    username:
+    {
+        type:Sequelize.STRING,
+        allowNull:false
+    },
     grpname:{
         type:Sequelize.STRING,
         allowNull:false

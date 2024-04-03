@@ -36,8 +36,10 @@ exports.getmessage= async(req,res,next)=>{
     const groupId= req.params.id
     try{
         const message= await Message.findAll({where:{groupId:groupId}})
+        const group= await Group.findOne({where:{id:groupId}})
+        console.log(group)
        
-        res.json({msg:message})
+        res.json({msg:message,grpname:group.grpname})
 
     }
     catch(e)

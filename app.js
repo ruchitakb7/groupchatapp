@@ -8,7 +8,7 @@ const io= socketIO(server,{ cors : { origin : '*'}});
 
 io.on("connection",(socket)=>{
     console.log('websocket connected');
-    socket.on("message",()=>{socket.broadcast.emit("message") });
+    socket.on("message",(msgdata,grouId)=>{socket.broadcast.emit("message",msgdata,grouId) });
     socket.on("update",(userId)=>{ socket.broadcast.emit("update",userId)});
     socket.on("deletegrp",()=>{ socket.broadcast.emit("deletegrp",)});
   
@@ -26,6 +26,7 @@ const User= require('./models/signup.js');
 const Message=require('./models/message.js');
 const Usergrp= require('./models/usergrp.js')
 const Group= require('./models/groups.js')
+const Forgotpassword = require('./models/forgotpassword.js')
 
 app.use(cors({origin:"*",}))
 app.use(express.json());
@@ -43,6 +44,7 @@ const GroupRouterFile= require('./routes/group.js')
 app.use(GroupRouterFile)
 
 
+
 User.hasMany(Message)
 Message.belongsTo(User)
 
@@ -51,6 +53,9 @@ Group.belongsToMany(User,{through:Usergrp})
 
 Group.hasMany(Message)
 Message.belongsTo(Group)
+
+User.hasMany(Forgotpassword)
+Forgotpassword.belongsTo(User)
 
 seq.sync()
 .then(res=>

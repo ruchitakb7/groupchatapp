@@ -8,7 +8,7 @@ exports.creategrp=async(req,res,next)=>{
     const grpname= req.body.grpname
     try{
         const group= await Group.create({grpname:grpname,createdby:req.user.id})
-        await Usergrp.create({userId:req.user.id,groupId:group.id,grpname:grpname})
+        await Usergrp.create({username:req.user.name,userId:req.user.id,groupId:group.id,grpname:grpname})
         res.status(200).json({group})
     }
     catch(e)
@@ -20,10 +20,10 @@ exports.creategrp=async(req,res,next)=>{
  
 
 exports.getallgrp=async(req,res,next) =>{
-    const userid= req.params.id
+   // const userid= req.params.id
     try{
-        const group = await Usergrp.findAll({where:{userId:userid}})
-        const admin= await Group.findAll({where:{createdby:userid}})
+        const group = await Usergrp.findAll({where:{userId:req.user.id}})
+        const admin= await Group.findAll({where:{createdby:req.user.id}})
 
         res.json({usergroup:group,admin:admin})
     }
@@ -41,7 +41,7 @@ exports.addMember=async(req,res,next)=>{
         const user= await User.findOne({where:{email:email}})
         if(user)
         {
-            const response= await Usergrp.create({grpname:grpname,groupId:grpid,userId:user.id})
+            const response= await Usergrp.create({username:user.name,grpname:grpname,groupId:grpid,userId:user.id})
          // console.log(response)
            res.json({response})
         }
@@ -114,7 +114,7 @@ exports.changeAdmin=async(req,res,next)=>{
             return res.json({msg:"No user Member of this group with entered email id"});
             
                 const admin= await Group.update({createdby:user.id},{where:{id:groupId}})
-                return res.json({msg:"Admin changed"})
+                return res.json({msg:"Admin changed",user:user})
             
            
     }
@@ -131,7 +131,8 @@ exports.getallMembers= async(req,res,next)=>{
     const grpid= req.params.id
     try{
         const member= await Usergrp.findAll({where:{groupId:grpid}})
-        res.json(member)
+        const admin= await Group.findOne({where:{id:grpid}})
+        res.json({memberlist:member,admin:admin.createdby})
     }
     catch(e)
     {

@@ -21,3 +21,14 @@ input:hover{
   #password{
     color: red;
   }
+
+  #forgotpassword
+  {
+    box-shadow: 10px 5px 5px 10px  rgb(7, 153, 102);
+    margin-top: 0px;
+    width:400px;
+    padding:20px;
+    align-items: center;
+    margin-left: 35%;
+
+  }

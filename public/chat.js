@@ -6,6 +6,9 @@ const grouplist= document.querySelector('#grplist')
 const groupchat = document.querySelector('#grouptitle')
 const groupdetails= document.querySelector('#groupdetails')
 sendbtn.addEventListener('click', sendMessage)
+const logoutbtn= document.querySelector('#logoutbtn')
+const loginbtn= document.querySelector('#loginbtn')
+const msginput= document.querySelector('#msginput')
 
 const socket = io.connect("http://localhost:3001");
 
@@ -28,18 +31,28 @@ function parseJwt(token) {
 
 
   
-  socket.on("message", (msgdata) => {
-    messagedata() });
+  socket.on("message", (msgdata,groupId) => { 
+
+    if(groupId==localStorage.getItem('groupId'))
+    {
+        messagedata() 
+    }
+    })
   
   socket.on('update',(userId)=>{  
     const token= parseJwt(localStorage.getItem('token'))
     if(userId==token.id)
     {
+        document.getElementById('chat').style.display="none"
         getallGroup()
     }  
   }) 
 
-  socket.on("deletegrp", () => {getallGroup() });
+  socket.on("deletegrp", () => { 
+    document.getElementById('chat').style.display="none"
+    localStorage.removeItem('groupId')
+    getallGroup()
+ });
 
   
 
@@ -51,12 +64,11 @@ async function sendMessage(e)
     try{
         if (document.getElementById('file').files[0]) {
 
-         //   const token = localStorage.getItem('token');
             const groupId = localStorage.getItem('groupId');
             let file = document.getElementById('file').files[0];
             let formData = new FormData();
             formData.append("file", file)
-            console.log("------->", formData);
+            console.log(formData);
       
            const headers = {
               "Authorization": token,
@@ -66,9 +78,9 @@ async function sendMessage(e)
             const res = await axios.post(`/upload/${groupId}`, formData, {headers})
             console.log(res.data.userFile);
       
-           // socket.emit("file", res.data.userFile.message, res.data.userFile.name, groupId, res.data.userFile.userId)
            messagedata()
-           socket.emit("message",res); 
+           
+           socket.emit("message",res,groupId); 
         }
     else{
            const msgdata={
@@ -78,7 +90,8 @@ async function sendMessage(e)
               const res= await axios.post('/addmessage',msgdata, {headers: { "Authorization": token }})
               message.value=""
               messagedata()
-              socket.emit("message",msgdata);
+              
+              socket.emit("message",msgdata,msgdata.groupId);
         }
     }
     catch(e)
@@ -97,8 +110,8 @@ async function messagedata()
     {
         try{
             const response= await axios.get(`/allmessage/${grpId}`)
-           // console.log(response.data.msg)
-            messagedisplay(response.data.msg,token)
+           console.log(response.data.grpname)
+            messagedisplay(response.data.msg,response.data.grpname,token)
 
         }
         catch(e)
@@ -107,18 +120,16 @@ async function messagedata()
         }
     }
     else{
-        alert('you must be logged in first')
+        alert('you must be log in first')
     }
 }
 
- function messagedisplay(response,token)
+ function messagedisplay(response,grpname,token)
 {
-    groupchat.style.display="block"
+   console.log(grpname)
+    document.getElementById('chat').style.display="block"
 
-    groupdetails.style.display="block"
-    
-    groupchat.innerHTML=`<h3>${localStorage.getItem('groupname')}</h3>`
-   
+    groupchat.innerHTML=`<h3>${grpname}</h3>`
     chatbox.innerHTML=``;
     const parsetoken= parseJwt(token)
 
@@ -159,25 +170,34 @@ function creategrp()
 {
     document.getElementById('grpform').style.display='block'
     
-    
 }
+
 async function getallMember()
 {
    const id= localStorage.getItem('groupId')
+   
     try{
 
-        const memebrs= await axios.get(`/group/members/${id}`)
+        const memebrs= await axios.get(`/group/getallmember/${id}`)
         console.log(memebrs)
-
+        Groupdetails(memebrs.data.memebrlist,memebrs.data.admin)
+        
     }
     catch(e)
     {
         console.log(e)
     }
+   
 }
 
-async function grpcreated(){
+function Groupdetails(list,admin)
+{
+    document.getElementById('memberlist').innerHTML="hello"
+}
 
+
+async function grpcreated()
+{
     const token=localStorage.getItem('token')
     if(token)
     {
@@ -185,7 +205,8 @@ async function grpcreated(){
             try{
                 const response= await axios.post('/creategrp',{grpname},{headers: { "Authorization": token }});
               //  console.log(response)
-             getallGroup()
+              document.getElementById('grpform').style.display='none'
+                 getallGroup()
           
             }
             catch(e)
@@ -195,28 +216,49 @@ async function grpcreated(){
             }
     }
     else{
-        alert('create account first')
+        alert('Log In first')
     }
 
 }
 async function getallGroup()
 {
     const token=localStorage.getItem('token')
-    const parsetoken=parseJwt(token)
-    try{
-        const grpinfo= await axios.get(`/getallgroup/${parsetoken.id}`)
-        console.log(grpinfo.data.admin)
-        grpdispaly(grpinfo.data.usergroup,grpinfo.data.admin,parsetoken.id)
-    }
-    catch(e)
+    
+    if(token)
     {
-        console.log(e)
-    }
-     
+        
+        loginbtn.style.display="none";
+        logoutbtn.style.display="block"
+        const parsetoken=parseJwt(token)
+
+        try{
+            const grpinfo= await axios.get('/getallgroup',{headers: { "Authorization": token }})
+            console.log(grpinfo.data.admin)
+            grpdisplay(grpinfo.data.usergroup,grpinfo.data.admin,parsetoken.id)
+        }
+        catch(e)
+        {
+            console.log(e)
+        }
+    }    
+}
+function logoutpage()
+{
+    localStorage.removeItem('token')
+    localStorage.removeItem('groupId')
+    localStorage.removeItem('groupname')
+    
+    window.location.href="/login.html"
 }
 
- function grpdispaly(groups,admin,userid)
+function loginpage()
 {
+    window.location.href="/login.html"
+}
+
+ function grpdisplay(groups,admin,userid)
+{
+    
     grouplist.innerHTML=""
     groups.forEach(res =>{
     
@@ -229,14 +271,13 @@ async function getallGroup()
         para.appendChild(chatbtn)
         grouplist.appendChild(para)
 
-        chatbtn.addEventListener('click',()=>{
-            document.querySelector('.footer').style.display='block'
+        chatbtn.addEventListener('click',()=>{                    //to see message
+          //  document.querySelector('.footer').style.display='block'
+            msginput.style.display='block'
             localStorage.setItem('groupId',res.groupId)
-            localStorage.setItem('groupname',res.grpname)
            
           messagedata()
-          
-         
+                 
         })
          let x;
            admin.forEach(a=>{
@@ -307,7 +348,10 @@ async function deleteGroup(res)
     try{
 
         const response= await axios.delete(`/deletegrp/${res.groupId}`)
+        document.getElementById('chat').style.display="none"
+        localStorage.removeItem('groupId')
         getallGroup()
+        
        socket.emit('deletegrp')
 
     }
@@ -330,6 +374,7 @@ async function removeMember(email,res)
         const response= await axios.post('/group/removemember',data)
      
       //  window.location.href='/chat.html'
+
         socket.emit('update',response.data.user.id)
 
     }
@@ -349,7 +394,8 @@ async function changeAdmin(email,groupId)
          
         const res= await axios.post('/group/changeadmin',data)
         alert(res.data.msg)
-       // window.location.href='/chat.html'
+       getallGroup()
+       socket.emit('update', res.data.user.id)
     }
     catch(e)
     {
