@@ -22,8 +22,9 @@ exports.addMessage= async(req,res,next)=>{
             type:'text'
     
         })
-        console.log(message)
-        res.json({success:true,msg:text})
+      
+        
+        res.json({success:true,msg:message})
 
     }
     catch(e)

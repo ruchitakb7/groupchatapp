@@ -29,6 +29,7 @@ exports.uploadFile=async(req,res,next)=>{
           userId,
           type:'file'
         });
+       
         console.log(user)
 
         const userFile={
@@ -37,7 +38,7 @@ exports.uploadFile=async(req,res,next)=>{
             userId
         }
 
-        res.status(201).json({userFile,success:true})  
+        res.status(201).json({userFile,success:true,msg:user})  
     }
      catch (error) {
         console.log(error);

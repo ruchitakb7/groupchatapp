@@ -8,7 +8,7 @@ const io= socketIO(server,{ cors : { origin : '*'}});
 
 io.on("connection",(socket)=>{
     console.log('websocket connected');
-    socket.on("message",(msgdata,grouId)=>{socket.broadcast.emit("message",msgdata,grouId) });
+    socket.on("message",(msg,groupId)=>{socket.broadcast.emit("message",msg,groupId) });
     socket.on("update",(userId)=>{ socket.broadcast.emit("update",userId)});
     socket.on("deletegrp",()=>{ socket.broadcast.emit("deletegrp",)});
   
@@ -27,6 +27,7 @@ const Message=require('./models/message.js');
 const Usergrp= require('./models/usergrp.js')
 const Group= require('./models/groups.js')
 const Forgotpassword = require('./models/forgotpassword.js')
+//const Archive = require('./models/archivechat.js')
 
 app.use(cors({origin:"*",}))
 app.use(express.json());
@@ -42,6 +43,7 @@ const messageRouterfile=require('./routes/message.js')
 app.use(messageRouterfile)
 const GroupRouterFile= require('./routes/group.js')
 app.use(GroupRouterFile)
+
 
 
 

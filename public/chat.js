@@ -31,11 +31,12 @@ function parseJwt(token) {
 
 
   
-  socket.on("message", (msgdata,groupId) => { 
+  socket.on("message", (msg,groupId) => { 
 
     if(groupId==localStorage.getItem('groupId'))
     {
-        messagedata() 
+    
+        printmsg(msg)
     }
     })
   
@@ -60,11 +61,12 @@ async function sendMessage(e)
 {
     e.preventDefault();
     const token= localStorage.getItem('token')
+    const groupId = localStorage.getItem('groupId');
 
     try{
         if (document.getElementById('file').files[0]) {
 
-            const groupId = localStorage.getItem('groupId');
+            
             let file = document.getElementById('file').files[0];
             let formData = new FormData();
             formData.append("file", file)
@@ -78,9 +80,9 @@ async function sendMessage(e)
             const res = await axios.post(`/upload/${groupId}`, formData, {headers})
             console.log(res.data.userFile);
       
-           messagedata()
+          printmsg(res.data.msg,token)
            
-           socket.emit("message",res,groupId); 
+           socket.emit("message",res.data.msg,groupId); 
         }
     else{
            const msgdata={
@@ -89,9 +91,10 @@ async function sendMessage(e)
                 }
               const res= await axios.post('/addmessage',msgdata, {headers: { "Authorization": token }})
               message.value=""
-              messagedata()
+           
+              printmsg(res.data.msg,token)
               
-              socket.emit("message",msgdata,msgdata.groupId);
+              socket.emit("message",res.data.msg,groupId);
         }
     }
     catch(e)
@@ -101,39 +104,12 @@ async function sendMessage(e)
     }   
 } 
 
-
-async function messagedata()
+function printmsg(res)
 {
-   grpId= localStorage.getItem('groupId')
-    token= localStorage.getItem('token')
-    if(token)
-    {
-        try{
-            const response= await axios.get(`/allmessage/${grpId}`)
-           console.log(response.data.grpname)
-            messagedisplay(response.data.msg,response.data.grpname,token)
-
-        }
-        catch(e)
-        {
-            console.log(e)
-        }
-    }
-    else{
-        alert('you must be log in first')
-    }
-}
-
- function messagedisplay(response,grpname,token)
-{
-   console.log(grpname)
-    document.getElementById('chat').style.display="block"
-
-    groupchat.innerHTML=`<h3>${grpname}</h3>`
-    chatbox.innerHTML=``;
+  
+    console.log(res)
+    const token= localStorage.getItem('token')
     const parsetoken= parseJwt(token)
-
-     response.forEach(res => {
        
         if(res.userId==parsetoken.id)
         {
@@ -155,7 +131,7 @@ async function messagedata()
             para.innerHTML=`${res.name} : ${res.msg}`
            else
            {
-            console.log(res.msg)
+            
             para.innerHTML=`${res.name} :<a href="${res.msg}"> click to see download</a>`
            }
           
@@ -164,6 +140,84 @@ async function messagedata()
 
         }
         
+
+}
+
+
+async function messagedata()
+{
+   grpId= localStorage.getItem('groupId')
+    token= localStorage.getItem('token')
+    if(token)
+    {
+        try{
+            const response= await axios.get(`/allmessage/${grpId}`)
+           console.log(response.data.grpname)
+          // archive(response.data.msg)
+            messagedisplay(response.data.msg,response.data.grpname)
+
+        }
+        catch(e)
+        {
+            console.log(e)
+        }
+    }
+    else{
+        alert('you must be log in first')
+    }
+}
+
+ function messagedisplay(response,grpname)
+{
+    
+    document.getElementById('chat').style.display="block"
+
+    groupchat.innerHTML=`<h3>${grpname}</h3>`
+    chatbox.innerHTML=``;
+    const token= localStorage.getItem('token')
+    const parsetoken= parseJwt(token)
+
+     response.forEach(res => {
+
+        let x=new Date(res.createdAt)
+        let y= new Date()
+     
+       const h= Math.abs(x.getTime() - y.getTime()) / 3600000;
+       console.log(h)
+       if(h.toFixed()<24)
+       {
+            console.log(res.msg)
+       
+       
+        if(res.userId==parsetoken.id)
+        {
+            const para= document.createElement('p')
+            if(res.type=='text')
+            {
+                para.innerHTML=`you : ${res.msg}`
+            }
+            else{
+                para.innerHTML=`you:<a href="${res.msg}"> click to see download</a>`
+            }
+            
+            chatbox.appendChild(para)
+            para.style.color="red"
+        }
+        else{
+            const para= document.createElement('p')
+            if(res.type=="text")
+            para.innerHTML=`${res.name} : ${res.msg}`
+           else
+           {
+            
+            para.innerHTML=`${res.name} :<a href="${res.msg}"> click to see download</a>`
+           }
+          
+            chatbox.appendChild(para)
+            para.style.color="purple"
+
+        }
+    }
      })
 }
 function creategrp()
@@ -179,7 +233,7 @@ async function getallMember()
     try{
 
         const memebrs= await axios.get(`/group/getallmember/${id}`)
-        console.log(memebrs)
+        
         Groupdetails(memebrs.data.memebrlist,memebrs.data.admin)
         
     }
@@ -266,9 +320,13 @@ function loginpage()
         
         para.innerHTML=`${res.grpname}`;
         const chatbtn= document.createElement('button')
-        chatbtn.textContent='see chat'
+        chatbtn.textContent='OpenChat'
+
+        const archive= document.createElement('button')
+        archive.textContent='Archive Chat'
         
         para.appendChild(chatbtn)
+        para.appendChild(archive)
         grouplist.appendChild(para)
 
         chatbtn.addEventListener('click',()=>{                    //to see message
@@ -276,9 +334,18 @@ function loginpage()
             msginput.style.display='block'
             localStorage.setItem('groupId',res.groupId)
            
-          messagedata()
+            messagedata()
                  
         })
+
+        archive.addEventListener('click',()=>{                    //to see full chat message
+            //  document.querySelector('.footer').style.display='block'
+            //  msginput.style.display='block'
+              localStorage.setItem('groupId',res.groupId) 
+              archivechat()
+                   
+          })
+
          let x;
            admin.forEach(a=>{
              if(a.id==res.groupId)
@@ -294,7 +361,7 @@ function loginpage()
             const remove=document.createElement('button')
             remove.textContent='Remove Member';
             const admin=document.createElement('button')
-            admin.textContent='Admin';
+            admin.textContent='Change Admin';
             
             para.appendChild(adduser)
             para.appendChild(deletegrp)
@@ -404,8 +471,72 @@ async function changeAdmin(email,groupId)
    
 
 }
+async function archivechat()
+{
+   grpId= localStorage.getItem('groupId')
+    token= localStorage.getItem('token')
+    if(token)
+    {
+        try{
+            const response= await axios.get(`/allmessage/${grpId}`)
+           console.log(response.data.grpname)
+         
+            archive(response.data.msg,response.data.grpname)
 
+        }
+        catch(e)
+        {
+            console.log(e)
+        }
+    }
+    else{
+        alert('you must be log in first')
+    }
+}
 
+function archive(response,grpname)
+{
+    document.getElementById('chat').style.display="block"
+
+    groupchat.innerHTML=`<h3>${grpname}</h3>`
+    chatbox.innerHTML=``;
+    const token= localStorage.getItem('token')
+    const parsetoken= parseJwt(token)
+
+     response.forEach(res => {
+
+        if(res.userId==parsetoken.id)
+        {
+            const para= document.createElement('p')
+            if(res.type=='text')
+            {
+                para.innerHTML=`you : ${res.msg}`
+            }
+            else{
+                para.innerHTML=`you:<a href="${res.msg}"> click to see download</a>`
+            }
+            
+            chatbox.appendChild(para)
+            para.style.color="red"
+        }
+        else{
+            const para= document.createElement('p')
+            if(res.type=="text")
+            para.innerHTML=`${res.name} : ${res.msg}`
+           else
+           {
+            
+            para.innerHTML=`${res.name} :<a href="${res.msg}"> click to see download</a>`
+           }
+          
+            chatbox.appendChild(para)
+            para.style.color="purple"
+
+        }
+    
+     })
+   
+}
 
 
 
